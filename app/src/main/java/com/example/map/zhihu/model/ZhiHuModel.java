@@ -27,7 +27,14 @@ public class ZhiHuModel{
                 break;
             case BEFORE:
                 //往期
-
+                String date = (String) map.get("date");
+                ZhihuManager.getzHihuServer().getDailyBeforeList(date).compose(RxUtils.<String>rxObserbaleSchedulerHelper()).subscribe(new BaseObserver<String>(zhiHuCallback) {
+                    @Override
+                    public void onNext(String value) {
+//                Log.e("liangxq",value.toString());
+                        zhiHuCallback.setDailyListBean(value);
+                    }
+                });
                 break;
             case SECTIONS:
                 //专栏

@@ -19,7 +19,7 @@ public class WecharManager {
         }
         return wxServer;
     }
-    public Observable<String> getWechar(){
-        return wxServer.getwxnew();
+    public Observable<String> getWechar(Map<String,Object> map){
+        return wxServer.getwxnew(map);
     }
 }

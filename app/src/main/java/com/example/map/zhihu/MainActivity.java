@@ -1,10 +1,8 @@
 package com.example.map.zhihu;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,12 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.example.map.zhihu.fragment.CalendarFragment;
 import com.example.map.zhihu.fragment.CollectFragment;
 import com.example.map.zhihu.fragment.DataFragment;
-import com.example.map.zhihu.fragment.GankFragment;
+import com.example.map.zhihu.fragment.GankFragments.GankFragment;
 import com.example.map.zhihu.fragment.SettingFragment;
 import com.example.map.zhihu.fragment.VtexFragment;
 import com.example.map.zhihu.fragment.WXFragment;
@@ -29,7 +25,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private MenuItem menuItem;
     private MenuItem searchMenuItem;
-    private MaterialSearchView view_search;
+    public static MaterialSearchView view_search;
     private Toolbar toolbar;
 
     @Override
@@ -85,6 +81,20 @@ public class MainActivity extends AppCompatActivity
         MenuItem item = menu.findItem(R.id.action_settings);
         //关联toolbar的搜索按钮
         view_search.setMenuItem(item);
+        view_search.setVoiceSearch(true);
+        /*view_search.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(MainActivity.this, query, Toast.LENGTH_SHORT).show();
+                EventBus.getDefault().post(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });*/
         searchMenuItem = item;
         searchMenuItem.setVisible(false);
         toolbar.setTitle("知乎日报");

@@ -45,7 +45,11 @@ public class WecharAdapter extends RecyclerView.Adapter<WecharAdapter.ViewHolder
     public int getItemCount() {
         return wecharlist.size();
     }
-
+    public void setData(List<WecharListBean.NewslistBean> list){
+        wecharlist.clear();
+        wecharlist = list;
+        notifyDataSetChanged();
+    }
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView img;

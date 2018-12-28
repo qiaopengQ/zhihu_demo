@@ -12,6 +12,6 @@ public interface WXServer {
     /*@GET("?")
     Observable<String> getwxnew(@QueryMap Map<String,Object> map);*/
 
-    @GET("?key=52b7ec3471ac3bec6846577e79f20e4c&num=10&page=1")
-    Observable<String> getwxnew();
+    @GET("?")
+    Observable<String> getwxnew(@QueryMap Map<String,Object> map);
 }

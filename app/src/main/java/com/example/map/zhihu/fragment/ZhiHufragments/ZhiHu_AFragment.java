@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.map.zhihu.R;
@@ -34,6 +35,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -55,10 +57,13 @@ public class ZhiHu_AFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
     FloatingActionButton fabCalender;
     Unbinder unbinder;
     CalendarDay s;
+    @BindView(R.id.tv)
+    TextView tv;
     private List<DailyListBean.StoriesBean> data = new ArrayList<>();
     private List<String> img = new ArrayList<>();
     private List<String> title = new ArrayList<>();
     private RecycleAdapter recycleAdapter;
+    private boolean a = false;
 
 
     @Override
@@ -69,16 +74,38 @@ public class ZhiHu_AFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
     @Override
     public void load() {
         super.load();
+        a = false;
         presenter.getDailyListBean(ZhiHuRetrofit.LATEST, null);
     }
 
     @Override
     protected void initData() {
+        recycleAdapter = new RecycleAdapter(data, getContext());
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        rv.setLayoutManager(manager);
+        rv.setAdapter(recycleAdapter);
         EventBus.getDefault().register(this);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void getDate(CalendarDay data){
-        Toast.makeText(getContext(), "data:" + data, Toast.LENGTH_SHORT).show();
+    public void getDate(CalendarDay data) {
+        int day = data.getDay()+1;//天
+        int month = data.getMonth() + 1;//月
+        int year = data.getYear();//年
+        String date = null;
+        HashMap<String, Object> map = new HashMap<>();
+        if (day < 10) {
+            date = year + "" + month + "" + "0" + day;
+            map.put("date", date);
+        } else {
+            date = year + "" + month + "" + day;
+            map.clear();
+            map.put("date", date);
+        }
+        a = true;
+        presenter.getDailyListBean(ZhiHuRetrofit.BEFORE, map);
+        //Toast.makeText(getContext(), "data:" + date, Toast.LENGTH_SHORT).show();
+        date = null;
     }
 
     @Override
@@ -113,18 +140,23 @@ public class ZhiHu_AFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
     public void show(String o) {
         Gson gson = new Gson();
         DailyListBean dailyListBean = gson.fromJson(o, DailyListBean.class);
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        final List<DailyListBean.StoriesBean> stories = dailyListBean.getStories();
+        List<DailyListBean.StoriesBean> stories = dailyListBean.getStories();
+        if (a = false) {
+            tv.setVisibility(View.GONE);
+            data.clear();
+            data.addAll(stories);
+        } else {
+            tv.setVisibility(View.VISIBLE);
+            tv.setText(dailyListBean.getDate());
+            data.clear();
+            data.addAll(stories);
+        }
+        recycleAdapter.notifyDataSetChanged();
         Log.e("ZhiHu_AFragment", "stories:" + stories);
-        for (int i = 0; i < stories.size(); i++) {
+        /*for (int i = 0; i < stories.size(); i++) {
             img.add(stories.get(i).getImages().get(0));
             title.add(stories.get(i).getTitle());
-        }
-        data.addAll(stories);
-        recycleAdapter = new RecycleAdapter(data, getContext());
-        rv.setAdapter(recycleAdapter);
-        rv.setLayoutManager(manager);
-        recycleAdapter.notifyDataSetChanged();
+        }*/
         smart.setEnableLoadMore(false);
         smart.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
             @Override
@@ -134,10 +166,12 @@ public class ZhiHu_AFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
 
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-                data.clear();
-                data.addAll(stories);
-                recycleAdapter.notifyDataSetChanged();
-                smart.finishRefresh(1000);
+                /*data.clear();
+                data.addAll(stories);*/
+                //recycleAdapter.notifyDataSetChanged();
+                a=false;
+                presenter.getDailyListBean(ZhiHuRetrofit.LATEST, null);
+                smart.finishRefresh();
             }
         });
         /*banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE);
@@ -175,6 +209,6 @@ public class ZhiHu_AFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
     public void onViewClicked() {
         Intent intent = new Intent();
         intent.setClass(getContext(), ZhiHuActivity.class);
-        CircularAnimUtil.startActivity(getActivity(),intent,fabCalender,R.color.fab_bg);
+        CircularAnimUtil.startActivity(getActivity(), intent, fabCalender, R.color.fab_bg);
     }
 }
