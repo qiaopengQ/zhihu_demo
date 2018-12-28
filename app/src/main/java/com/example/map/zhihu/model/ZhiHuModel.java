@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class ZhiHuModel{
     public interface ZhiHuCallback<T> extends HttpFinishCallback{
-        void setDailyListBean(T t);
+        void setDailyListBean(T t,ZhiHuRetrofit zhiHuRetrofit);
     }
     public void getDailyListBean(final ZhiHuCallback zhiHuCallback, ZhiHuRetrofit zhiHuRetrofit, Map<String,Object> map){
         zhiHuCallback.setShowProgressbar();
@@ -21,7 +21,7 @@ public class ZhiHuModel{
                     @Override
                     public void onNext(String value) {
 //                Log.e("liangxq",value.toString());
-                        zhiHuCallback.setDailyListBean(value);
+                        zhiHuCallback.setDailyListBean(value,ZhiHuRetrofit.LATEST);
                     }
                 });
                 break;
@@ -32,7 +32,7 @@ public class ZhiHuModel{
                     @Override
                     public void onNext(String value) {
 //                Log.e("liangxq",value.toString());
-                        zhiHuCallback.setDailyListBean(value);
+                        zhiHuCallback.setDailyListBean(value,ZhiHuRetrofit.BEFORE);
                     }
                 });
                 break;
@@ -42,7 +42,7 @@ public class ZhiHuModel{
                     @Override
                     public void onNext(String value) {
                         //  Log.e("liangxq",value.toString());
-                        zhiHuCallback.setDailyListBean(value);
+                        zhiHuCallback.setDailyListBean(value,ZhiHuRetrofit.SECTIONS);
                     }
                 });
                 break;
@@ -55,7 +55,7 @@ public class ZhiHuModel{
                     @Override
                     public void onNext(String value) {
                         //  Log.e("liangxq",value.toString());
-                        zhiHuCallback.setDailyListBean(value);
+                        zhiHuCallback.setDailyListBean(value,ZhiHuRetrofit.HOT);
                     }
                 });
                 break;

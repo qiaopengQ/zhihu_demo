@@ -20,6 +20,7 @@ import com.example.map.zhihu.base.fragment.BaseFragment;
 import com.example.map.zhihu.beans.GankListBean;
 import com.example.map.zhihu.http.gank.GankRetri;
 import com.example.map.zhihu.presenter.GankPresenter;
+import com.example.map.zhihu.utils.SystemUtil;
 import com.example.map.zhihu.view.GankView;
 import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -74,6 +75,15 @@ public class Gank_AFragment extends BaseFragment<GankView, GankPresenter<GankVie
     @Override
     protected void initData() {
         Glide.with(this).load(img).into(imgAndroid);
+        techAppbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                float rate = (SystemUtil.dp2px(getContext(),256)+verticalOffset *2)/ SystemUtil.dp2px(getContext(),256);
+                if (rate >=0){
+                    imgAndroid.setAlpha(rate);
+                }
+            }
+        });
         gankAdapter = new GankAdapter(gank, getContext());
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         rv.setLayoutManager(manager);

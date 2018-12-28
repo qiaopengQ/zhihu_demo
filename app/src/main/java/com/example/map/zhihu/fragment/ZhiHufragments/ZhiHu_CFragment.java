@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.map.zhihu.R;
-import com.example.map.zhihu.adapter.ZhiHuAdapter;
+import com.example.map.zhihu.adapter.zhihu.ZhiHuAdapter;
 import com.example.map.zhihu.base.fragment.BaseFragment;
 import com.example.map.zhihu.beans.SectionListBean;
 import com.example.map.zhihu.http.zhihu.ZhiHuRetrofit;
@@ -86,7 +86,7 @@ public class ZhiHu_CFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
     }
 
     @Override
-    public void show(String s) {
+    public void show(String s,ZhiHuRetrofit zhiHuRetrofit) {
         Log.e("ZhiHu_CFragment", s);
         Gson gson = new Gson();
         final SectionListBean sectionListBean = gson.fromJson(s, SectionListBean.class);

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.map.zhihu.R;
 import com.example.map.zhihu.adapter.GankAdapter;
 import com.example.map.zhihu.adapter.GankAdapter_IOS;
@@ -20,6 +21,7 @@ import com.example.map.zhihu.base.fragment.BaseFragment;
 import com.example.map.zhihu.beans.GankListBean;
 import com.example.map.zhihu.http.gank.GankRetri;
 import com.example.map.zhihu.presenter.GankPresenter;
+import com.example.map.zhihu.utils.SystemUtil;
 import com.example.map.zhihu.view.GankView;
 import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -48,11 +50,13 @@ public class Gank_BFragment extends BaseFragment<GankView, GankPresenter<GankVie
     private String tab;
     private List<GankListBean.ResultsBean> gank = new ArrayList<>();
     private GankAdapter_IOS gankAdapter_ios;
+    private String imgB;
     public Gank_BFragment() {
 
     }
     public Gank_BFragment(String tech, String img) {
         tab = tech;
+        imgB=img;
     }
 
     @Override
@@ -62,6 +66,16 @@ public class Gank_BFragment extends BaseFragment<GankView, GankPresenter<GankVie
 
     @Override
     protected void initData() {
+        Glide.with(this).load(imgB).into(imgAndroid);
+        techAppbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                float rate = (SystemUtil.dp2px(getContext(),256)+verticalOffset *2)/ SystemUtil.dp2px(getContext(),256);
+                if (rate >=0){
+                    imgAndroid.setAlpha(rate);
+                }
+            }
+        });
         gankAdapter_ios = new GankAdapter_IOS(gank,getContext());
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         rv.setLayoutManager(manager);

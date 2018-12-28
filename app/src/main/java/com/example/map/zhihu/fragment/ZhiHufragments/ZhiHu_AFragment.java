@@ -13,11 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.map.zhihu.R;
 import com.example.map.zhihu.activity.ZhiHuActivity;
-import com.example.map.zhihu.adapter.RecycleAdapter;
+import com.example.map.zhihu.adapter.zhihu.RecycleAdapter;
 import com.example.map.zhihu.base.fragment.BaseFragment;
 import com.example.map.zhihu.beans.DailyListBean;
 import com.example.map.zhihu.http.zhihu.ZhiHuRetrofit;
@@ -56,15 +55,11 @@ public class ZhiHu_AFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
     @BindView(R.id.fab_calender)
     FloatingActionButton fabCalender;
     Unbinder unbinder;
-    CalendarDay s;
     @BindView(R.id.tv)
     TextView tv;
     private List<DailyListBean.StoriesBean> data = new ArrayList<>();
-    private List<String> img = new ArrayList<>();
-    private List<String> title = new ArrayList<>();
+    private List<DailyListBean.TopStoriesBean> beforedata = new ArrayList<>();
     private RecycleAdapter recycleAdapter;
-    private boolean a = false;
-
 
     @Override
     public int createLayoutId() {
@@ -74,13 +69,12 @@ public class ZhiHu_AFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
     @Override
     public void load() {
         super.load();
-        a = false;
         presenter.getDailyListBean(ZhiHuRetrofit.LATEST, null);
     }
 
     @Override
     protected void initData() {
-        recycleAdapter = new RecycleAdapter(data, getContext());
+        recycleAdapter = new RecycleAdapter(data,beforedata, getContext());
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         rv.setLayoutManager(manager);
         rv.setAdapter(recycleAdapter);
@@ -102,7 +96,6 @@ public class ZhiHu_AFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
             map.clear();
             map.put("date", date);
         }
-        a = true;
         presenter.getDailyListBean(ZhiHuRetrofit.BEFORE, map);
         //Toast.makeText(getContext(), "data:" + date, Toast.LENGTH_SHORT).show();
         date = null;
@@ -137,26 +130,25 @@ public class ZhiHu_AFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
     }
 
     @Override
-    public void show(String o) {
+    public void show(String o,ZhiHuRetrofit zhiHuRetrofit) {
         Gson gson = new Gson();
         DailyListBean dailyListBean = gson.fromJson(o, DailyListBean.class);
-        List<DailyListBean.StoriesBean> stories = dailyListBean.getStories();
-        if (a = false) {
-            tv.setVisibility(View.GONE);
-            data.clear();
-            data.addAll(stories);
-        } else {
-            tv.setVisibility(View.VISIBLE);
-            tv.setText(dailyListBean.getDate());
-            data.clear();
-            data.addAll(stories);
+        switch (zhiHuRetrofit){
+            case LATEST://最新
+                List<DailyListBean.StoriesBean> stories = dailyListBean.getStories();
+                List<DailyListBean.TopStoriesBean> top_stories = dailyListBean.getTop_stories();
+                data.addAll(stories);
+                beforedata.addAll(top_stories);
+                recycleAdapter.addDailyList(dailyListBean);
+                break;
+            case BEFORE:
+                List<DailyListBean.StoriesBean> stories2 = dailyListBean.getStories();
+                List<DailyListBean.TopStoriesBean> top_stories2 = dailyListBean.getTop_stories();
+                data.addAll(stories2);
+                beforedata.addAll(top_stories2);
+                recycleAdapter.addDailyBeforeList(dailyListBean);
+                break;
         }
-        recycleAdapter.notifyDataSetChanged();
-        Log.e("ZhiHu_AFragment", "stories:" + stories);
-        /*for (int i = 0; i < stories.size(); i++) {
-            img.add(stories.get(i).getImages().get(0));
-            title.add(stories.get(i).getTitle());
-        }*/
         smart.setEnableLoadMore(false);
         smart.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
             @Override
@@ -169,46 +161,21 @@ public class ZhiHu_AFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
                 /*data.clear();
                 data.addAll(stories);*/
                 //recycleAdapter.notifyDataSetChanged();
-                a=false;
-                presenter.getDailyListBean(ZhiHuRetrofit.LATEST, null);
+                //presenter.getDailyListBean(ZhiHuRetrofit.LATEST, null);
                 smart.finishRefresh();
             }
         });
-        /*banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE);
-//设置图片加载器，图片加载器在下方
-        banner.setImageLoader(new ImageLoader() {
-            @Override
-            public void displayImage(Context context, Object path, ImageView imageView) {
-                //path表示当前要显示的图片的url，，imageView表示当前要显示图片的载体
-                Glide.with(context).load(path).into(imageView);
-            }
-        });
-//设置图片网址或地址的集合
-        banner.setImages(img);
-//设置轮播的动画效果，内含多种特效，可点入方法内查找后内逐一体验
-        banner.setBannerAnimation(Transformer.Default);
-//设置轮播图的标题集合
-        banner.setBannerTitles(title);
-//设置轮播间隔时间
-        banner.setDelayTime(3000);
-//设置是否为自动轮播，默认是“是”。
-        banner.isAutoPlay(true);
-//设置指示器的位置，小点点，左中右。
-        banner.setIndicatorGravity(6);
-        banner.start();*/
-
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
     }
 
     @OnClick(R.id.fab_calender)
     public void onViewClicked() {
+        //copyToClipboard(getContext(),"李涛");
         Intent intent = new Intent();
         intent.setClass(getContext(), ZhiHuActivity.class);
         CircularAnimUtil.startActivity(getActivity(), intent, fabCalender, R.color.fab_bg);
     }
+    /*public static void copyToClipboard(Context context, String text) {
+        ClipboardManager systemService = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        systemService.setPrimaryClip(ClipData.newPlainText("text", text));
+    }*/
 }

@@ -33,9 +33,9 @@ public class ZhiHuPresenter<V extends ZhiHuView> extends IBasePresenter<V> imple
     }
 
     @Override
-    public void setDailyListBean(Object o) {
+    public void setDailyListBean(Object o,ZhiHuRetrofit zhiHuRetrofit) {
         if (mView !=null){
-            mView.show(o);
+            mView.show(o,zhiHuRetrofit);
         }
     }
 }

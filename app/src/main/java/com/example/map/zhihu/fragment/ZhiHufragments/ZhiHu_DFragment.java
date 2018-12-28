@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.map.zhihu.R;
-import com.example.map.zhihu.adapter.ZhiHuAdapter_hot;
+import com.example.map.zhihu.adapter.zhihu.ZhiHuAdapter_hot;
 import com.example.map.zhihu.base.fragment.BaseFragment;
 import com.example.map.zhihu.beans.HotListBean;
 import com.example.map.zhihu.http.zhihu.ZhiHuRetrofit;
@@ -79,7 +79,7 @@ public class ZhiHu_DFragment extends BaseFragment<ZhiHuView, ZhiHuPresenter<ZhiH
     }
 
     @Override
-    public void show(String s) {
+    public void show(String s,ZhiHuRetrofit zhiHuRetrofit) {
         Log.e("ZhiHu_DFragment", s);
         Gson gson = new Gson();
         HotListBean hotListBean = gson.fromJson(s, HotListBean.class);

@@ -1,4 +1,4 @@
-package com.example.map.zhihu.adapter;
+package com.example.map.zhihu.adapter.zhihu;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,16 +11,16 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.map.zhihu.R;
-import com.example.map.zhihu.beans.SectionListBean;
+import com.example.map.zhihu.beans.HotListBean;
 
 import java.util.List;
 
-public class ZhiHuAdapter extends RecyclerView.Adapter<ZhiHuAdapter.ViewHolder>{
-    private List<SectionListBean.DataBean> data;
+public class ZhiHuAdapter_hot extends RecyclerView.Adapter<ZhiHuAdapter_hot.ViewHolder>{
+    private List<HotListBean.RecentBean> hot;
     private Context context;
 
-    public ZhiHuAdapter(List<SectionListBean.DataBean> data, Context context) {
-        this.data = data;
+    public ZhiHuAdapter_hot(List<HotListBean.RecentBean> hot, Context context) {
+        this.hot = hot;
         this.context = context;
     }
 
@@ -28,34 +28,31 @@ public class ZhiHuAdapter extends RecyclerView.Adapter<ZhiHuAdapter.ViewHolder>{
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_item_sections, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_item_hot, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(context).load(data.get(position).getThumbnail()).into(holder.img);
-        holder.tv1.setText(data.get(position).getName());
-        holder.tv2.setText(data.get(position).getDescription());
+        holder.tv.setText(hot.get(position).getTitle());
+        Glide.with(context).load(hot.get(position).getThumbnail()).into(holder.img);
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return hot.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView img;
-        private TextView tv1;
-        private TextView tv2;
+        private TextView tv;
 
         public ViewHolder(View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.img);
-            tv1 = itemView.findViewById(R.id.tv1);
-            tv2 = itemView.findViewById(R.id.tv2);
+            tv = itemView.findViewById(R.id.tv);
         }
     }
 }
